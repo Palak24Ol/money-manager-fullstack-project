@@ -1,7 +1,5 @@
-export const BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-
 
 export const API_ENDPOINTS = {
     LOGIN: "/login",
