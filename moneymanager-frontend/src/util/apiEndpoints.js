@@ -1,4 +1,5 @@
-export const BASE_URL = "https://money-manager-fullstack-project-production.up.railway.app/api/v1.0";
+export const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 const CLOUDINARY_CLOUD_NAME = "dhadf5h7j";
 
 export const API_ENDPOINTS = {
