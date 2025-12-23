@@ -34,16 +34,20 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     http
         .cors(Customizer.withDefaults())
         .csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/auth/**",
-                "/status",
-                "/health"
-            ).permitAll()
-            .anyRequest().authenticated()
-        )
         .sessionManagement(session ->
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        )
+        .authorizeHttpRequests(auth -> auth
+            // ✅ PUBLIC ENDPOINTS (WITH CONTEXT PATH)
+            .requestMatchers(
+                "/api/v1.0/auth/login",
+                "/api/v1.0/auth/register",
+                "/api/v1.0/activate",
+                "/api/v1.0/health",
+                "/api/v1.0/status"
+            ).permitAll()
+            // everything else requires JWT
+            .anyRequest().authenticated()
         )
         .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
