@@ -23,25 +23,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
 
-     @Override
+    @Override
 protected void doFilterInternal(HttpServletRequest request,
                                 HttpServletResponse response,
                                 FilterChain filterChain)
         throws ServletException, IOException {
 
-    String path = request.getServletPath();
-
-    if (path.equals("/api/v1.0/login") ||
-        path.equals("/api/v1.0/register") ||
-        path.equals("/api/v1.0/activate")) {
+    String path = request.getRequestURI();
+    if (path.contains("/login") || path.contains("/register") || path.contains("/activate")) {
         filterChain.doFilter(request, response);
         return;
     }
 
-    String authHeader = request.getHeader("Authorization");
-
-    String jwt = null;
+    final String authHeader = request.getHeader("Authorization");
     String email = null;
+    String jwt = null;
 
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
         jwt = authHeader.substring(7);
@@ -50,14 +46,11 @@ protected void doFilterInternal(HttpServletRequest request,
 
     if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
         if (jwtUtil.validateToken(jwt, userDetails)) {
-            UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-
-            token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(token);
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
     }
 
