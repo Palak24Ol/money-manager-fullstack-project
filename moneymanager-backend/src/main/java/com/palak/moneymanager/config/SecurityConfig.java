@@ -38,15 +38,13 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         )
         .authorizeHttpRequests(auth -> auth
-            // ✅ PUBLIC ENDPOINTS (WITH CONTEXT PATH)
             .requestMatchers(
-                "/api/v1.0/auth/login",
-                "/api/v1.0/auth/register",
+                "/api/v1.0/login",
+                "/api/v1.0/register",
                 "/api/v1.0/activate",
-                "/api/v1.0/health",
-                "/api/v1.0/status"
+                "/api/v1.0/status",
+                "/api/v1.0/health"
             ).permitAll()
-            // everything else requires JWT
             .anyRequest().authenticated()
         )
         .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
