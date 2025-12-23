@@ -26,32 +26,30 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AppUserDetailsService appUserDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
 
     @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(Customizer.withDefaults())
-        .csrf(AbstractHttpConfigurer::disable)
-        .sessionManagement(session ->
-            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/api/v1.0/login",
-                "/api/v1.0/register",
-                "/api/v1.0/activate",
-                "/api/v1.0/status",
-                "/api/v1.0/health"
-            ).permitAll()
-            .anyRequest().authenticated()
-        )
-        .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(Customizer.withDefaults())
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/api/v1.0/login",
+                    "/api/v1.0/register",
+                    "/api/v1.0/activate",
+                    "/api/v1.0/status",
+                    "/api/v1.0/health"
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-    return http.build();
-}
-
+        return http.build();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -60,21 +58,15 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization","Content-Type", "Accept"));
-        configuration.setAllowCredentials(true);
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
-
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(appUserDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return new ProviderManager(authenticationProvider);
-    }
 }
+
