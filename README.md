@@ -1,4 +1,4 @@
-# Money Manager
+# TrackMyMoney
 
 A full-stack web application for personal finance management that helps users track their income and expenses, visualize spending patterns, and manage their financial goals.
 
