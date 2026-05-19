@@ -2,10 +2,12 @@ package com.palak.moneymanager.service;
 
 import com.resend.Resend;
 import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.Attachment;
 import com.resend.services.emails.model.CreateEmailOptions;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import java.util.Base64;
+import java.util.List;
 
 @Service
 public class EmailService {
@@ -23,7 +25,7 @@ public class EmailService {
                     .from(fromEmail)
                     .to(to)
                     .subject(subject)
-                    .text(body)
+                    .html(body)
                     .build();
             resend.emails().send(params);
         } catch (ResendException e) {
@@ -32,7 +34,22 @@ public class EmailService {
     }
 
     public void sendEmailWithAttachment(String to, String subject, String body, byte[] attachment, String filename) {
-        // For now same as sendEmail — attachments via Resend need extra setup
-        sendEmail(to, subject, body + "\n\n(Attachment: " + filename + ")");
+        try {
+            Resend resend = new Resend(resendApiKey);
+            Attachment resendAttachment = Attachment.builder()
+                    .fileName(filename)
+                    .content(Base64.getEncoder().encodeToString(attachment))
+                    .build();
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from(fromEmail)
+                    .to(to)
+                    .subject(subject)
+                    .html(body)
+                    .attachments(List.of(resendAttachment))
+                    .build();
+            resend.emails().send(params);
+        } catch (ResendException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }
