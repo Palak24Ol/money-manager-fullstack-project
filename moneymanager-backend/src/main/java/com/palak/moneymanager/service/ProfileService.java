@@ -31,17 +31,22 @@ public class ProfileService {
     @Value("${app.activation.url}")
     private String activationURL;
 
+ 
     public ProfileDTO registerProfile(ProfileDTO profileDTO) {
-        ProfileEntity newProfile = toEntity(profileDTO);
-        newProfile.setActivationToken(UUID.randomUUID().toString());
-        newProfile = profileRepository.save(newProfile);
-        //send activation email
-        String activationLink = activationURL+"/api/v1.0/activate?token=" + newProfile.getActivationToken();
+    ProfileEntity newProfile = toEntity(profileDTO);
+    newProfile.setActivationToken(UUID.randomUUID().toString());
+    newProfile = profileRepository.save(newProfile);
+    //send activation email
+    try {
+        String activationLink = activationURL + "/api/v1.0/activate?token=" + newProfile.getActivationToken();
         String subject = "Activate your Money Manager account";
         String body = "Click on the following link to activate your account: " + activationLink;
         emailService.sendEmail(newProfile.getEmail(), subject, body);
-        return toDTO(newProfile);
+    } catch (Exception e) {
+        System.out.println("Email sending failed: " + e.getMessage());
     }
+    return toDTO(newProfile);
+}
 
     public ProfileEntity toEntity(ProfileDTO profileDTO) {
         return ProfileEntity.builder()
