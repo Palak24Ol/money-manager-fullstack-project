@@ -1,40 +1,42 @@
-import React from "react";
-import {X} from "lucide-react";
+import { X } from "lucide-react";
 
 const Modal = ({ isOpen, onClose, children, title }) => {
-    if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    return (
+  return (
+    <div className="fixed inset-0 z-50 flex justify-center items-center bg-black/40 backdrop-blur-sm animate-fade-in">
+      <div className="relative w-full max-w-lg mx-4 max-h-[90vh]">
         <div
-            className="fixed inset-0 z-50 flex justify-center items-center w-full h-full overflow-hidden bg-black/40
-      backdrop-blur-sm"
+          className="bg-white rounded-3xl shadow-2xl overflow-hidden"
+          style={{ border: "1.5px solid rgba(0,0,0,0.06)" }}
         >
-            <div className="relative p-4 w-full max-w-2xl max-h-[90vh]">
-                {/* Modal header */}
-                <div className="relative bg-white rounded-xl shadow-2xl border border-gray-100">
-                    {/* Modal content */}
-                    <div className="flex items-center justify-between p-5 md:p-6 border-b border-gray-100 rounded-t-xl">
-                        <h3 className="text-xl font-semibold text-gray-800">
-                            {title}
-                        </h3>
+          {/* Header */}
+          <div
+            className="flex items-center justify-between px-6 py-5 border-b"
+            style={{ borderColor: "#F7F2EB" }}
+          >
+            <h3 className="text-lg font-extrabold" style={{ color: "#1A2332" }}>
+              {title}
+            </h3>
+            <button
+              onClick={onClose}
+              className="w-9 h-9 flex items-center justify-center rounded-xl transition-colors"
+              style={{ background: "#F7F2EB", color: "#6B7280" }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#FDEEF1"; e.currentTarget.style.color = "#F05D73"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "#F7F2EB"; e.currentTarget.style.color = "#6B7280"; }}
+            >
+              <X size={16} />
+            </button>
+          </div>
 
-                        <button
-                            type="button"
-                            className="text-gray-500 bg-gray-50 hover:bg-gray-100 hover:text-gray-700 rounded-lg text-sm w-9 h-9 flex justify-center items-center transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                            onClick={onClose}
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-
-                    {/*Modal body*/}
-                    <div className="p-5 md:p-6 text-gray-700">
-                        {children}
-                    </div>
-                </div>
-            </div>
+          {/* Body */}
+          <div className="px-6 py-5 overflow-y-auto max-h-[70vh]">
+            {children}
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Modal;
