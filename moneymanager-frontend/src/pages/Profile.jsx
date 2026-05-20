@@ -99,7 +99,8 @@ const Profile = () => {
             }
 
             const payload = { fullName: fullName.trim(), profileImageUrl };
-            const res = await axiosConfig.put(API_ENDPOINTS.UPDATE_PROFILE, payload);
+            
+const res = await axiosConfig.patch(API_ENDPOINTS.UPDATE_PROFILE, payload);
 
             if (res.status === 200) {
                 setUser({ ...user, fullName: fullName.trim(), profileImageUrl });

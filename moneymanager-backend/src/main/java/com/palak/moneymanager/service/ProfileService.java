@@ -125,4 +125,17 @@ public class ProfileService {
             throw new RuntimeException("Invalid email or password");
         }
     }
+    public ProfileDTO updateProfile(ProfileDTO profileDTO) {
+    ProfileEntity currentProfile = getCurrentProfile();
+
+    if (profileDTO.getFullName() != null && !profileDTO.getFullName().isBlank()) {
+        currentProfile.setFullName(profileDTO.getFullName());
+    }
+    if (profileDTO.getProfileImageUrl() != null) {
+        currentProfile.setProfileImageUrl(profileDTO.getProfileImageUrl());
+    }
+
+    ProfileEntity saved = profileRepository.save(currentProfile);
+    return toDTO(saved);
+}
 }

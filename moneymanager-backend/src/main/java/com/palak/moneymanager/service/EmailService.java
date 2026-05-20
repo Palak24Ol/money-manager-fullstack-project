@@ -1,45 +1,55 @@
 package com.palak.moneymanager.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.Attachment;
+import com.resend.services.emails.model.CreateEmailOptions;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import java.util.Base64;
+import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    @Value("${resend.api.key}")
+    private String resendApiKey;
 
     @Value("${spring.mail.properties.mail.smtp.from}")
     private String fromEmail;
 
     public void sendEmail(String to, String subject, String body) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
-            mailSender.send(message);
-        } catch (Exception e) {
+            Resend resend = new Resend(resendApiKey);
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from(fromEmail)
+                    .to(to)
+                    .subject(subject)
+                    .html(body)
+                    .build();
+            resend.emails().send(params);
+        } catch (ResendException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    public void sendEmailWithAttachment(String to, String subject, String body, byte[] attachment, String filename) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setFrom(fromEmail);
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(body);
-        helper.addAttachment(filename, new ByteArrayResource(attachment));
-        mailSender.send(message);
+    public void sendEmailWithAttachment(String to, String subject, String body, byte[] attachment, String filename) {
+        try {
+            Resend resend = new Resend(resendApiKey);
+            Attachment resendAttachment = Attachment.builder()
+                    .fileName(filename)
+                    .content(Base64.getEncoder().encodeToString(attachment))
+                    .build();
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from(fromEmail)
+                    .to(to)
+                    .subject(subject)
+                    .html(body)
+                    .attachments(List.of(resendAttachment))
+                    .build();
+            resend.emails().send(params);
+        } catch (ResendException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }
