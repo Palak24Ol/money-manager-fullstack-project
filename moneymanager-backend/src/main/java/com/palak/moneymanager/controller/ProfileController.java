@@ -56,9 +56,9 @@ public class ProfileController {
     }
 
     // ✅ NEW — update name + photo
-    @PatchMapping("/profile")
-    public ResponseEntity<ProfileDTO> updateProfile(@RequestBody ProfileDTO profileDTO) {
-        ProfileDTO updated = profileService.updateProfile(profileDTO);
-        return ResponseEntity.ok(updated);
-    }
+    @PutMapping("/profile")
+public ResponseEntity<ProfileDTO> updateProfile(@RequestBody ProfileDTO profileDTO) {
+    ProfileDTO updated = profileService.updateProfile(profileDTO);
+    return ResponseEntity.ok(updated);
+}
 }
